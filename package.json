@@ -1,0 +1,23 @@
+{
+    "name": "hubot-cron-json",
+    "version": "0.1.0",
+    "description": "Manage hubot cron job defined by json configuration",
+    "main": "index.coffee",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/tcnksm/hubot-cron-json.git"
+    },
+    "keywords": [
+        "hubot"
+    ],    
+    "dependencies": {
+        "coffee-script": ">= 1.1.0",
+        "cron": ">= 1.0.1"
+    },
+    
+    "author": "Taichi Nakashima",
+    "license": "MIT"
+}
