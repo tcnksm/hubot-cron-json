@@ -19,8 +19,8 @@ module.exports = (robot) ->
   
   # Read cron setting from cron-msg.json
   cronTask = new CronTask(robot, user)
-  cronTask.set()
-
+  cronTask.setAll()
+  
   # Say all cron tasks
   robot.respond /cron (list|ls)/i, (msg) ->
     cronTask.list()
@@ -51,17 +51,25 @@ class CronTask
         if t['event']?
           @robot.send @user, 'Emit ' + t['event'] + ' at ' + t['time']
 
-  set: ->
+  setAll: ->
     @read (tasks) =>
       for t in tasks
         if t['msg']?
-          new Cron(t['time'], () =>
-            @robot.send @user, t['msg']
-          ).start()              
-          console.log('Set cron-msg, ' + t['msg'] + ' at ' + t['time'])
-              
+          @setMsg(t['time'],t['msg'])
+        
         if t['event']?
-          new Cron(t['time'], () =>
-            @robot.emit t['event'], 'got event'
-          ).start()              
-          console.log('Set cron-event, ' + t['event'] + ' at ' + t['time'])
+          @setEvent(t['time'], t['event'])
+
+  setMsg: (time, msg) ->
+    new Cron(time, () =>
+      @robot.send @user, msg
+    ).start()
+    console.log('Set cron msg, ' + msg + ' at ' + time)
+
+  setEvent: (time, event) ->
+    new Cron(time, () =>
+      @robot.emit event
+    ).start()              
+    console.log('Set cron event, ' + event + ' at ' + time)
+
+  

@@ -1,6 +1,6 @@
 {
     "name": "hubot-cron-json",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Manage hubot cron job defined by json configuration",
     "main": "index.coffee",
     "scripts": {
