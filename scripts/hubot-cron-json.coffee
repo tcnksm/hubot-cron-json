@@ -3,10 +3,10 @@
 #
 # Commnads:
 #   hubot cron list - List all cron msg/events
-# 
+#
 # Author
 #   tcnksm <https://github.com/tcnksm>
-#  
+#
 
 Cron = require('cron').CronJob
 Fs   = require 'fs'
@@ -15,8 +15,8 @@ Path = require 'path'
 module.exports = (robot) ->
 
   # Hipchat room for send
-  user = {room: process.env.HUBOT_HIPCHAT_ROOMS}
-  
+  user = process.env.HUBOT_HIPCHAT_ROOMS.split(",").map (word) -> { room: word }
+
   # Read cron setting from cron-msg.json
   cronTask = new CronTask(robot, user)
   cronTask.setAll()
@@ -38,18 +38,22 @@ class CronTask
           if data.length > 0
             cb JSON.parse data
           else
-            @robot.send @user, "Definition file is empty: " + configFilePath
+            for r in @user
+              @robot.send r['room'], "Definition file is empty: " + configFilePath
       else
-        @robot.send @user, "Definition file not found: " + configFilePath
+        for r in @user
+          @robot.send r['room'], "Definition file not found: " + configFilePath
 
   list: ->
     @read (tasks) =>
-      for t in tasks      
+      for t in tasks
         if t['msg']?
-          @robot.send @user, 'Tell ' + t['msg'] + ' at ' + t['time']
+          for r in @user
+            @robot.send r['room'], 'Tell ' + t['msg'] + ' at ' + t['time']
         
         if t['event']?
-          @robot.send @user, 'Emit ' + t['event'] + ' at ' + t['time']
+          for r in @user
+            @robot.send r['room'], 'Emit ' + t['event'] + ' at ' + t['time']
 
   setAll: ->
     @read (tasks) =>
@@ -62,14 +66,15 @@ class CronTask
 
   setMsg: (time, msg) ->
     new Cron(time, () =>
-      @robot.send @user, msg
+      for r in @user
+        @robot.send r['room'], msg
     ).start()
     console.log('Set cron msg, ' + msg + ' at ' + time)
 
   setEvent: (time, event) ->
     new Cron(time, () =>
       @robot.emit event
-    ).start()              
+    ).start()
     console.log('Set cron event, ' + event + ' at ' + time)
 
-  
+
